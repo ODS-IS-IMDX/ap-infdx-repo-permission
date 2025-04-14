@@ -1,0 +1,115 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:ap-northeast-1:992382697894:task-definition/prd-infdx-ecs-permission-01:8",
+    "containerDefinitions": [
+        {
+            "name": "prd-infdx-ecs-container-permission-01",
+            "image": "${{ env.IMAGE_URL }}",
+            "cpu": 2048,
+            "memoryReservation": 4096,
+            "portMappings": [
+                {
+                    "name": "8080",
+                    "containerPort": 8080,
+                    "hostPort": 8080,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "environment": [],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/aws/ecs/prd-infdx-ecs-permission-01/tasks",
+                    "mode": "non-blocking",
+                    "awslogs-create-group": "true",
+                    "max-buffer-size": "25m",
+                    "awslogs-region": "ap-northeast-1",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        }
+    ],
+    "family": "prd-infdx-ecs-permission-01",
+    "taskRoleArn": "arn:aws:iam::992382697894:role/prd-infdx-iam-role-ecs-task-permission-01",
+    "executionRoleArn": "arn:aws:iam::992382697894:role/prd-infdx-iam-role-ecs-taskexecution-permission-01",
+    "networkMode": "awsvpc",
+    "revision": 8,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.28"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.21"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "FARGATE"
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "2048",
+    "memory": "5120",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "registeredAt": "2024-09-27T08:05:35.294Z",
+    "registeredBy": "arn:aws:sts::992382697894:assumed-role/AWSReservedSSO_sec-infdx-iamic-policy-admin-01_a18f8a479c29745e/Toshiya.Aoki.Bp",
+    "tags": [
+        {
+            "key": "Environment",
+            "value": "prd"
+        },
+        {
+            "key": "Owner",
+            "value": "infra"
+        },
+        {
+            "key": "Terraform",
+            "value": "false"
+        },
+        {
+            "key": "Name",
+            "value": "prd-infdx-ecs-permission-01"
+        }
+    ]
+}

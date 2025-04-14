@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- © 2025 NTT DATA Japan Co., Ltd. & NTT InfraNet All Rights Reserved. -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spatialid.app.api.domain.repository.ApiAuthRepository">
+    <resultMap type="com.spatialid.app.api.domain.entity.ApiUserGroupEntity" id="apiUserGroupMap">
+        <result column="servicer_group_id" property="servicerGroupId"/>
+        <result column="api_id" property="apiId"/>
+        <result column="uri" property="uri"/>
+        <result column="servicer_id" property="servicerId"/>
+    </resultMap>
+    <select id="selectApiUserGroup"
+            parameterType="com.spatialid.app.api.domain.entity.GetApiUserGroupEntity"
+            resultType="com.spatialid.app.api.domain.entity.ApiUserGroupEntity"
+            resultMap="apiUserGroupMap">
+        select
+            tbl1.servicer_group_id,
+            tbl1.api_id,
+            mst1.uri,
+            mst2.servicer_id 
+        from
+            api_user_auth AS tbl1 
+            inner join api_user_group AS tbl2 
+                on tbl1.servicer_group_id = tbl2.servicer_group_id 
+            inner join api_mst AS mst1 
+                on tbl1.api_id = mst1.api_id 
+            inner join servicer_mst AS mst2 
+                on tbl2.servicer_id = mst2.servicer_id 
+        where
+        <trim prefixOverrides="and">
+            <if test="servicerId != null and servicerId != ''">
+                tbl2.servicer_id = #{servicerId}
+            </if>
+            <if test="servicerGroupId != null and servicerGroupId != ''">
+                and tbl1.servicer_group_id = #{servicerGroupId}
+            </if>
+            <if test="apiId != null and apiId != ''">
+                and tbl1.api_id = #{apiId}
+            </if>
+            <if test="uri != null and uri != ''">
+                and mst1.uri LIKE CONCAT(#{uri}, '%')
+            </if>
+        </trim>
+        order by
+            tbl1.servicer_group_id,
+            tbl1.api_id;
+    </select>
+    
+    <select id="countApiId" resultType="int"> 
+        select 
+            count(*) 
+        from 
+            api_mst mst1
+        where 
+            mst1.api_id 
+        in
+           <foreach collection="apiIdList" item="apiId" open="(" separator="," close=")">
+                 #{apiId}
+           </foreach>
+           ;
+
+    </select>
+    
+    <select id="isCheckServicerGroupId" resultType="boolean">
+        select
+        Exists(
+            select
+                1
+            from
+                api_user_group tbl1
+            where
+                tbl1.servicer_group_id = #{servicerGroupId}
+        );
+    
+    </select>
+    
+    <insert id="regApiAuth">
+        insert into
+            api_user_auth
+        (
+            servicer_group_id
+        ,    api_id
+        ,    overview
+        ,    update_time
+        )
+        values
+            <foreach collection="entityList" item="entity" separator=",">
+                (
+                    #{entity.servicerGroupId}
+                ,    #{entity.apiIdList}
+                ,    #{entity.overview}
+                ,    now()
+                )
+            </foreach>
+        ;
+    </insert>
+    
+    <delete id="delApiAuth">
+        delete 
+        from 
+            api_user_auth tbl1
+        where 
+            tbl1.servicer_group_id = #{servicer_group_id}
+    </delete>
+    
+    <delete id="delApiAuthBeforeLatestUpdate">
+        delete 
+        from 
+            api_user_auth tbl1
+        where 
+            tbl1.servicer_group_id = #{servicerGroupId}
+        and
+            tbl1.update_time &lt;= #{latestUpdateTime}
+    </delete>
+    
+    <insert id="updRegApiAuth">
+        insert into 
+            api_user_auth
+            (
+                servicer_group_id
+            ,    api_id
+            ,    overview
+            ,    update_time
+            )
+        values 
+            <foreach collection="apiAuthEntityList" item="entity" separator=",">
+                (
+                    #{entity.servicerGroupId}
+                ,    #{entity.apiId}
+                ,    #{entity.overview}
+                ,    #{entity.updateTime}::timestamp
+                )
+            </foreach>
+        ;
+    </insert>
+    
+    <select id="countByServicerGroupId" resultType="int">
+        select 
+            count(*)
+        from
+            api_user_auth tbl1
+        where
+            tbl1.servicer_group_id = #{servicerGroupId}
+        ;
+    </select>
+
+    <select id="getLatestUpdateTime" resultType="java.time.LocalDateTime">
+        select
+        max(tbl1.update_time)
+        from
+        api_user_auth tbl1
+        where
+        tbl1.servicer_group_id = #{servicerGroupId}
+        ;
+    </select>
+
+</mapper>
